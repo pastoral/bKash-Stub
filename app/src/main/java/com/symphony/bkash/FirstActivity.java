@@ -3,6 +3,7 @@ package com.symphony.bkash;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +18,8 @@ import android.util.Log;
 import com.symphony.bkash.data.model.PostInfo;
 import com.symphony.bkash.data.remote.TokenDataApiService;
 import com.symphony.bkash.data.remote.TokenDataApiUtils;
+import com.symphony.bkash.receiver.ShowNotificationJob;
+import com.symphony.bkash.receiver.VersionChecker;
 
 import org.json.JSONObject;
 
@@ -24,6 +27,7 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -36,6 +40,7 @@ public class FirstActivity extends BaseActivity {
     public static String[] permisionList = { "android.permission.READ_PHONE_STATE","android.permission.READ_CONTACTS"}; //,"android.permission.READ_CONTACTS"
     public static final int permsRequestCode = 20;
     public Intent serviceIntent;
+    String mLatestVersionName, installVersion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,12 @@ public class FirstActivity extends BaseActivity {
         setContentView(R.layout.activity_first);
 
         FirstActivity.super.requestAppPermissions(permisionList, R.string.runtime_permissions_txt, permsRequestCode);
+        VersionChecker versionChecker = new VersionChecker();
+        try {
+            mLatestVersionName = versionChecker.execute().get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -50,6 +61,7 @@ public class FirstActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        ShowNotificationJob.schedulePeriodic();
         String mac = "00:00:00:00:00";
         String activated = "0";
         String model = "Symphony";
@@ -123,7 +135,7 @@ public class FirstActivity extends BaseActivity {
         }
 
         if(ContextCompat.checkSelfPermission(FirstActivity.this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
-            startActivity(intent);
+            //startActivity(intent);
         }
     }
 
