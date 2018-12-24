@@ -14,12 +14,15 @@ public class PostInfo {
     @SerializedName("MAC")
     @Expose
     private String mAC;
+    @SerializedName("ANDROID_ID")
+    @Expose
+    private String androidId;
     @SerializedName("SIM_Number")
     @Expose
     private String sIMNumber;
     @SerializedName("Activated")
     @Expose
-    private Integer activated;
+    private String activated;
     @SerializedName("Model")
     @Expose
     private String model;
@@ -40,7 +43,7 @@ public class PostInfo {
      * @param activated
      * @param sIMNumber
      */
-    public PostInfo(String iMEI1, String iMEI2, String mAC, String sIMNumber, Integer activated, String model) {
+    public PostInfo(String iMEI1, String iMEI2, String mAC, String androidId, String sIMNumber, String activated, String model) {
         super();
         this.iMEI1 = iMEI1;
         this.iMEI2 = iMEI2;
@@ -48,6 +51,7 @@ public class PostInfo {
         this.sIMNumber = sIMNumber;
         this.activated = activated;
         this.model = model;
+        this.androidId = androidId;
     }
 
     public String getIMEI1() {
@@ -82,11 +86,11 @@ public class PostInfo {
         this.sIMNumber = sIMNumber;
     }
 
-    public Integer getActivated() {
+    public String getActivated() {
         return activated;
     }
 
-    public void setActivated(Integer activated) {
+    public void setActivated(String activated) {
         this.activated = activated;
     }
 

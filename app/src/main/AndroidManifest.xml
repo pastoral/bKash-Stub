@@ -32,7 +32,7 @@
         <service android:name=".UploaderService">
 
         </service>
-        <receiver android:name="com.symphony.bkash.receiver.BootReceiver"
+        <!--<receiver android:name="com.symphony.bkash.receiver.BootReceiver"
             android:enabled="true"
             android:exported="true"
             android:directBootAware="true"
@@ -51,7 +51,7 @@
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <data android:scheme="package" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
     </application>
 
 </manifest>
