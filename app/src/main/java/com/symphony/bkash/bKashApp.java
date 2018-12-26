@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.evernote.android.job.JobManager;
 import com.onesignal.OneSignal;
+import com.symphony.bkash.listener.Foreground;
 import com.symphony.bkash.onesignal.MyNotificationOpenedHandler;
 import com.symphony.bkash.onesignal.MyNotificationReceivedHandler;
 import com.symphony.bkash.receiver.DemoJobCreator;
@@ -18,7 +19,10 @@ public class bKashApp extends Application {
         @Override
         public void onCreate() {
             super.onCreate();
-            JobManager.create(this).addJobCreator(new DemoJobCreator());
+            Foreground.init(this);
+            if(Foreground.get().isForeground()) {
+
+            }
 
             // OneSignal Initialization
             OneSignal.startInit(this)

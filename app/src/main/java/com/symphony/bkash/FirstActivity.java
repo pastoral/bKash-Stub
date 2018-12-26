@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,9 +31,21 @@ public class FirstActivity extends BaseActivity implements AppUpdateListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
         FirstActivity.super.requestAppPermissions(permisionList, R.string.runtime_permissions_txt, permsRequestCode);
-        if(ConnectionUtils.isNetworkConnected(this)){
-            ShowNotificationJob.schedulePeriodic();
+        ShowNotificationJob.schedulePeriodic();
 
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+            mainWork();
+        }
+    }
+
+    public void mainWork(){
+        if(ConnectionUtils.isNetworkConnected(this)){
             PackageManager pm = getApplicationContext().getPackageManager();
             if(ConnectionUtils.isPackageInstalled(packagename, pm) == 1){
                 new VersionChecker(this, packagename, this);
@@ -44,11 +58,6 @@ public class FirstActivity extends BaseActivity implements AppUpdateListener {
         } else {
             displayNoInternetDialog(this);
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     public void displayNoInternetDialog(final Activity activity){
@@ -86,6 +95,19 @@ public class FirstActivity extends BaseActivity implements AppUpdateListener {
     @Override
     public void onUpdate() {
         gotoPlay();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case permsRequestCode:
+                if (grantResults != null && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                        mainWork();
+                    }
+                }
+                break;
+        }
     }
 }
 

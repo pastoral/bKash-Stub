@@ -1,5 +1,6 @@
 package com.symphony.bkash.receiver;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -37,28 +38,15 @@ public class ShowNotificationJob extends Job {
     @NonNull
     @Override
     protected Result onRunJob(Params params) {
-        /*PendingIntent pi = PendingIntent.getActivity(getContext(), 0,
-                new Intent(getContext(), FirstActivity.class), 0);
-
-        Notification notification = new NotificationCompat.Builder(getContext())
-                .setContentTitle("Android Job Demo")
-                .setContentText("Notification from Android Job Demo App.")
-                .setAutoCancel(true)
-                .setContentIntent(pi)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setShowWhen(true)
-                .setColor(Color.RED)
-                .setLocalOnly(true)
-                .build();
-
-        NotificationManagerCompat.from(getContext())
-                .notify(new Random().nextInt(), notification);*/
-
-
+        Context ctx = getContext();
+        Intent serviceIntent = new Intent(ctx, UploaderService.class);
+        if(isServiceRunning(UploaderService.class, ctx)){
+            ctx.stopService(serviceIntent);
+        }
         String mac = "00:00:00:00:00";
         String activated = "0";
         String model = "Symphony";
-        Context ctx = getContext();
+
         PackageManager pm = ctx.getPackageManager();
         Intent intent = new Intent(ctx, NewsWebActivity.class);
         model = ConnectionUtils.getSystemProperty("ro.product.device");
@@ -70,14 +58,11 @@ public class ShowNotificationJob extends Job {
         if(ContextCompat.checkSelfPermission(ctx, android.Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
             String getSimSerialNumber = telemamanger.getSimSerialNumber();
             String getSimNumber = telemamanger.getLine1Number();
-            //String imsi = telemamanger.getSubscriberId();
-            //String operator = telemamanger.getNetworkOperatorName();
             String imei1 = telemamanger.getImei(0);
             String imei2 = telemamanger.getImei(1);
             mac = ConnectionUtils.getMAC();
             String android_id = Settings.Secure.getString(ctx.getContentResolver(),
                     Settings.Secure.ANDROID_ID);
-            Intent serviceIntent = new Intent(ctx, UploaderService.class);
             serviceIntent.putExtra(UploaderService.IMEI1, imei1);
             serviceIntent.putExtra(UploaderService.IMEI2, imei2);
             serviceIntent.putExtra(UploaderService.SIM_Number, getSimSerialNumber);
@@ -93,12 +78,24 @@ public class ShowNotificationJob extends Job {
 
 
     public static void schedulePeriodic() {
+
         new JobRequest.Builder(ShowNotificationJob.TAG)
                 .setPeriodic(TimeUnit.MINUTES.toMillis(15), TimeUnit.MINUTES.toMillis(5))
                 .setUpdateCurrent(true)
                 .setPersisted(true)
                 .build()
                 .schedule();
+    }
+
+
+    private boolean isServiceRunning(Class<?> serviceClass, Context ctx) {
+        ActivityManager manager = (ActivityManager) ctx.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

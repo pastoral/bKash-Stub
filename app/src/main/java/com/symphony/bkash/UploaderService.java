@@ -97,7 +97,7 @@ public class UploaderService extends IntentService {
 
     public void updateInfo(long id, String imei1,String imei2,String mac, String android_id, String sim, String activated, String model){
         PostInfo postInfo = new PostInfo(imei1,imei2,mac,android_id,sim,activated,model);
-        tokenDataAPIService.updateInfo(22, postInfo).enqueue(new Callback<BkashResponse>() {
+        tokenDataAPIService.updateInfo(id, postInfo).enqueue(new Callback<BkashResponse>() {
             @Override
             public void onResponse(Call<BkashResponse> call, Response<BkashResponse> response) {
 
